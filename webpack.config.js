@@ -1,12 +1,11 @@
 const path = require("path");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const ReactRefreshPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
+const isDevelopment = process.env.NODE_ENV !== "production";
 module.exports = {
   entry: "./src/index.tsx",
-  mode:
-    process.env.NODE_ENV === "production"
-      ? "production"
-      : "development",
+  mode: isDevelopment ? "development" : "production",
   output: {
     path: path.resolve(__dirname, "build"),
     filename: "bundle.js",
@@ -36,6 +35,21 @@ module.exports = {
         test: /\.(css|scss)$/,
         use: ["style-loader", "css-loader", "sass-loader"],
       },
+      {
+        test: /\.(png|jp(e*)g|gif)$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "static/media/[name].[hash].[ext]",
+            },
+          },
+        ],
+      },
+      {
+        test: /\.svg$/,
+        use: "file-loader",
+      },
     ],
   },
   resolve: {
@@ -48,6 +62,7 @@ module.exports = {
     port: 4000,
   },
   plugins: [
+    isDevelopment && new ReactRefreshPlugin(),
     new HtmlWebPackPlugin({
       template: "./public/index.html",
     }),
